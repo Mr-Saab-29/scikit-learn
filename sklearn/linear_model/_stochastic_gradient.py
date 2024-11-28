@@ -11,7 +11,7 @@ from numbers import Integral, Real
 
 import numpy as np
 
-from .._loss._loss import CyHalfBinomialLoss, CyHalfSquaredError, CyHuberLoss
+from .._loss._loss import CyHalfBinomialLoss, CyHalfSquaredError, CyHuberLoss, HalfPoissonLoss, HalfGammaLoss, HalfTweedieLoss
 from ..base import (
     BaseEstimator,
     OutlierMixin,
@@ -1389,6 +1389,9 @@ class BaseSGDRegressor(RegressorMixin, BaseSGD):
         "huber": (CyHuberLoss, DEFAULT_EPSILON),
         "epsilon_insensitive": (EpsilonInsensitive, DEFAULT_EPSILON),
         "squared_epsilon_insensitive": (SquaredEpsilonInsensitive, DEFAULT_EPSILON),
+        "poisson": (HalfPoissonLoss,),
+        "gamma": (HalfGammaLoss,),
+        "tweedie": (HalfTweedieLoss,),
     }
 
     _parameter_constraints: dict = {
@@ -2062,6 +2065,14 @@ class SGDRegressor(BaseSGDRegressor):
             warm_start=warm_start,
             average=average,
         )
+    
+    def predict(self, X):
+        raw_prediction = self._decision_function(X)
+
+        if hasattr(self.loss, "inverse_link"):
+            return self.loss.inverse_link(raw_prediction)
+        else:
+            return raw_prediction
 
 
 class SGDOneClassSVM(OutlierMixin, BaseSGD):

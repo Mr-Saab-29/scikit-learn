@@ -743,6 +743,9 @@ class HalfPoissonLoss(BaseLoss):
         if sample_weight is not None:
             term *= sample_weight
         return term
+    
+    def inverse_link(self, raw_prediction):
+        return np.exp(raw_prediction)
 
 
 class HalfGammaLoss(BaseLoss):
@@ -774,6 +777,9 @@ class HalfGammaLoss(BaseLoss):
         if sample_weight is not None:
             term *= sample_weight
         return term
+    
+    def inverse_link(self, raw_prediction):
+        return np.exp(raw_prediction)
 
 
 class HalfTweedieLoss(BaseLoss):
@@ -838,6 +844,9 @@ class HalfTweedieLoss(BaseLoss):
             if sample_weight is not None:
                 term *= sample_weight
             return term
+        
+    def inverse_link(self, raw_prediction):
+        return np.exp(raw_prediction)
 
 
 class HalfTweedieLossIdentity(BaseLoss):
